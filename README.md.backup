@@ -75,7 +75,7 @@ We store for each operand:
 
 - Current **smallest** word (*any word*) achievable. Example:
 
-	* `(aba+ca)*d` is `1`;
+	* `(aba+ca)*d` is `3`;
 
 How to update answer for each operator?
 
