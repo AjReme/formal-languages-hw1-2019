@@ -8,5 +8,5 @@ int main() {
     char x;
     size_t k;
     std::cin >> a >> x >> k;
-    std::cout << solver(a, x, k).solve() << '\n';
+    std::cout << solve(a, x, k) << '\n';
 }

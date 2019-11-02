@@ -7,7 +7,9 @@
 #include <exception>
 
 
-class solver
+#include <iostream>
+
+class __solver
 {
 
 private:
@@ -190,7 +192,7 @@ private:
 
 public:
 
-    solver(const std::string& a, const char x, const size_t k) : _a(a), _x(x), _k(k) {
+    __solver(const std::string& a, const char x, const size_t k) : _a(a), _x(x), _k(k) {
         if (a.empty()) {
             throw std::logic_error("Regex is empty");
         }
@@ -255,3 +257,8 @@ public:
     }
 
 };
+
+
+size_t solve(std::string a, char x, size_t k) {
+    return __solver(a, x, k).solve();
+}

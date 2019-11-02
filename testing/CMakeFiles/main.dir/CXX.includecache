@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/solver.hpp
+map
+-
+set
+-
+stack
+-
+string
+-
+vector
+-
+algorithm
+-
+exception
+-
+iostream
+-
+
+/home/alexstanovoy/Documents/git-projects/formal-languages-hw1-2019/testing/tests/test1.cpp
+solver.hpp
+/home/alexstanovoy/Documents/git-projects/formal-languages-hw1-2019/testing/tests/solver.hpp
+
