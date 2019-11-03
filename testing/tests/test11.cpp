@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("a*a.", 'a', 3) != 3;
+	exit(solve("a*a.", 'a', 3) != 3);
 }

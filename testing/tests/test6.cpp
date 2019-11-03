@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("aa.*a.", 'a', 4) != 5;
+	exit(solve("aa.*a.", 'a', 4) != 5);
 }

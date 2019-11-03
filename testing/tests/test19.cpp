@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("acb..bab.c.*.ab.ba.+.+*a.b3", 'b', 3) != 7;
+	exit(solve("acb..bab.c.*.ab.ba.+.+*a.", 'b', 3) != 7);
 }

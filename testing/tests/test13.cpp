@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("aa.a.aa.a.a.a.+*", 'a', 15) != 15;
+	exit(solve("aa.a.aa.a.a.a.+*", 'a', 15) != 15);
 }

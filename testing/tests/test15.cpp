@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("1+a", 'a', 1) != 1;
+	exit(solve("1a+", 'a', 1) != 1);
 }

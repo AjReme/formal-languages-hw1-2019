@@ -1,249 +1,131 @@
-#include <map>
-#include <set>
 #include <stack>
+#include <queue>
 #include <string>
 #include <vector>
+#include <utility>
+#include <stdexcept>
 #include <algorithm>
-#include <exception>
 
-
-#include <iostream>
 
 class __solver
 {
 
 private:
 
-    const std::string _a;
-    const char _x;
-    const size_t _k;
+    const char null_word = '1';
+    const size_t inf = static_cast<size_t>(1ull << 60);
 
-    struct operand
+    struct auto_node
     {
 
-        size_t k;
-        size_t smallest;
-        size_t ans;
-        std::map<size_t, size_t> prefixes;
-        std::map<size_t, size_t> suffixes;
-        std::set<size_t> repeating;
+        struct edge {
+            size_t to;
+            char symb;
+        };
 
-        static const size_t inf = ~static_cast<size_t>(1ull << 63);
+        std::vector<edge> next_nodes;
 
-        void metainfo() {
-            std::cout << "k value: " << k << std::endl;
-            std::cout << "prefixes: " << std::endl;
-            for (auto i : prefixes) {
-                std::cout << "(" << i.first << ' ' << i.second << ")" << std::endl;
-            }
-            std::cout << "suffixes: " << std::endl;
-            for (auto i : suffixes) {
-                std::cout << "(" << i.first << ' ' << i.second << ")" << std::endl;
-            }
-            std::cout << "repeating: " << std::endl;
-            for (auto i : repeating) {
-                std::cout << i << std::endl;
-            }
-            std::cout << "ans: " << ans << std::endl;
-            std::cout << "smallest: " << smallest << std::endl;
-            std::cout << "---------------------" << std::endl << std::endl;
+        void push(size_t next, char symb) {
+            next_nodes.push_back({ next, symb });
         }
 
-        operand(char C, char x, size_t k) : k(k) {
-            if (C == '1') {
-                ans = inf;
-                smallest = 0;
-                prefixes[0] = 0;
-                suffixes[0] = 0;
-            }
-            else if (C == x) {
-                smallest = 1;
-                repeating.insert(1);
-                if (k == 1) {
-                    ans = 1;
-                }
-                else {
-                    ans = inf;
-                }
-            }
-            else {
-                smallest = 1;
-                ans = inf;
-                prefixes[0] = 1;
-                suffixes[0] = 1;
-            }
-        }
+        auto_node() = default;
 
-        static void insert_or_update(std::map<size_t, size_t>& mp, size_t val1, size_t val2) {
-            auto it = mp.find(val1);
-            if (it == mp.end()) {
-                mp[val1] = val2;
-            }
-            else {
-                it->second = std::min(it->second, val2);
-            }
-        }
-
-        void concat(const operand& rhs) {
-            ans = std::min(ans + rhs.smallest, smallest + rhs.ans);
-            for (auto& i : suffixes) {
-                for (auto& j : rhs.prefixes) {
-                    if (i.first + j.first >= k) {
-                        ans = std::min(ans, i.second + j.second);
-                    }
-                }
-                for (auto& j : rhs.repeating) {
-                    if (i.first + j >= k) {
-                        ans = std::min(ans, i.second + j);
-                    }
-                }
-            }
-            for (auto& i : repeating) {
-                for (auto& j : rhs.prefixes) {
-                    if (i + j.first >= k) {
-                        ans = std::min(ans, i + j.second);
-                    }
-                }
-                for (auto& j : rhs.repeating) {
-                    if (i + j >= k) {
-                        ans = std::min(ans, i + j);
-                    }
-                }
-            }
-            std::map<size_t, size_t> new_prefixes;
-            std::map<size_t, size_t> new_suffixes;
-            std::set<size_t> new_repeating;
-            for (auto& i : prefixes) {
-                new_prefixes[i.first] = i.second + rhs.smallest;
-            }
-            for (auto& i : rhs.suffixes) {
-                new_suffixes[i.first] = smallest + i.second;
-            }
-            for (auto& i : repeating) {
-                for (auto& j : rhs.prefixes) {
-                    insert_or_update(new_prefixes, i + j.first, i + j.second);
-                }
-            }
-            for (auto& i : suffixes) {
-                for (auto& j : rhs.repeating) {
-                    insert_or_update(new_suffixes, i.first + j, i.second + j);
-                }
-            }
-            for (auto& i : repeating) {
-                for (auto& j : rhs.repeating) {
-                    new_repeating.insert(i + j);
-                }
-            }
-            prefixes = new_prefixes;
-            suffixes = new_suffixes;
-            repeating = new_repeating;
-            smallest += rhs.smallest;
-        }
-
-        void uni(const operand& rhs) {
-            ans = std::min(ans, rhs.ans);
-            smallest = std::min(smallest, rhs.smallest);
-            for (const auto& i : rhs.prefixes) {
-                insert_or_update(prefixes, i.first, i.second);
-            }
-            for (const auto& i : rhs.suffixes) {
-                insert_or_update(suffixes, i.first, i.second);
-            }
-            for (const auto& i : rhs.repeating) {
-                repeating.insert(i);
-            }
-        }
-
-        void brut(std::set<size_t>::iterator it, size_t cur_rep, size_t exc_len) {
-            if (it == repeating.end()) {
-                return;
-            }
-            else {
-                auto nxt = it;
-                ++nxt;
-                for (size_t i = 0;; ++i) {
-                    if (cur_rep + *it * i >= k) {
-                        ans = std::min(ans, cur_rep + *it * i + exc_len);
-                        return;
-                    }
-                    brut(nxt, cur_rep + *it * i, exc_len);
-                }
-            }
-        }
-
-        void repeat() {
-            smallest = 0;
-            insert_or_update(prefixes, 0, 0);
-            insert_or_update(suffixes, 0, 0);
-            for (auto& i : suffixes) {
-                for (auto& j : prefixes) {
-                    if (i.first + j.first >= k) {
-                        //std::cout << "errrrrrrrrrrrrrrrrrrrrrrrrrrr\n";
-                        ans = std::min(ans, i.second + j.second);
-                    }
-                    else {
-                        brut(repeating.begin(), i.first + j.first, i.second + j.second);
-                    }
-                }
-            }
-        }
+        ~auto_node() = default;
 
     };
 
-public:
+    struct automata { size_t begin, end; };
 
-    __solver(const std::string& a, const char x, const size_t k) : _a(a), _x(x), _k(k) {
-        if (a.empty()) {
-            throw std::logic_error("Regex is empty");
-        }
+    struct repeat_pair { size_t begin, end; };
+
+    struct step { size_t begin, cur, len; };
+
+    std::vector<auto_node> auto_nodes;
+    std::vector<std::vector<size_t>> dist;
+    std::vector<repeat_pair> possible_pairs;
+
+    automata create_automata(char symb) {
+        size_t begin = auto_nodes.size();
+        size_t end = begin + 1;
+        auto_nodes.emplace_back();
+        auto_nodes.emplace_back();
+        auto_nodes[begin].push(end, symb);
+        return { begin, end };
     }
 
-    size_t solve() {
-        std::stack<operand, std::vector<operand>> operands;
-        for (size_t i = 0; i < _a.size(); ++i) {
-            const char cur = _a[i];
-            switch (cur) {
+    automata unite_automata(automata lhs, automata rhs) {
+        size_t begin = auto_nodes.size();
+        size_t end = begin + 1;
+        auto_nodes.emplace_back();
+        auto_nodes.emplace_back();
+        auto_nodes[begin].push(lhs.begin, null_word);
+        auto_nodes[begin].push(rhs.begin, null_word);
+        auto_nodes[lhs.end].push(end, null_word);
+        auto_nodes[rhs.end].push(end, null_word);
+        return { begin, end };
+    }
+
+    automata concatenate_automata(automata lhs, automata rhs) {
+        auto_nodes[lhs.end].push(rhs.begin, null_word);
+        return { lhs.begin, rhs.end };
+    }
+
+    automata repeat_automata(automata lhs) {
+        size_t begin = auto_nodes.size();
+        size_t end = begin + 1;
+        auto_nodes.emplace_back();
+        auto_nodes.emplace_back();
+        auto_nodes[begin].push(lhs.begin, null_word);
+        auto_nodes[lhs.end].push(begin, null_word);
+        auto_nodes[begin].push(end, null_word);
+        return { begin, end };
+    }
+
+    automata create_structures(const std::string& rp_regex) {
+        std::stack<automata, std::vector<automata>> operands;
+        for (size_t i = 0; i < rp_regex.size(); ++i) {
+            char cur_symb = rp_regex[i];
+            switch (cur_symb) {
                 case '+': {
                     if (operands.size() < 2) {
-                        throw std::out_of_range(
+                        throw std::logic_error(
                             ("Invalid regex provided. There are no operands for + operator in position " + std::to_string(i)).c_str()
                         );
                     }
-                    auto tmp = operands.top();
+                    auto lhs = operands.top();
                     operands.pop();
-                    operands.top().uni(tmp);
-                    //std::cout << "uni:\n";
-                    //operands.top().metainfo();
+                    auto rhs = operands.top();
+                    operands.pop();
+                    operands.push(unite_automata(lhs, rhs));
                     break;
                 }
                 case '.': {
                     if (operands.size() < 2) {
-                        throw std::out_of_range(
+                        throw std::logic_error(
                             ("Invalid regex provided. There are no operands for . operator in position " + std::to_string(i)).c_str()
                         );
                     }
-                    auto tmp = operands.top();
+                    auto lhs = operands.top();
                     operands.pop();
-                    operands.top().concat(tmp);
-                    //std::cout << "concat:\n";
-                    //operands.top().metainfo();
+                    auto rhs = operands.top();
+                    operands.pop();
+                    operands.push(concatenate_automata(lhs, rhs));
                     break;
                 }
                 case '*': {
                     if (operands.size() < 1) {
-                        throw std::out_of_range(
+                        throw std::logic_error(
                             ("Invalid regex provided. There are no operands for * operator in position " + std::to_string(i)).c_str()
                         );
                     }
-                    operands.top().repeat();
-                    //std::cout << "repeat:\n";
-                    //operands.top().metainfo();
+                    auto lhs = operands.top();
+                    operands.pop();
+                    operands.push(repeat_automata(lhs));
                     break;
                 }
                 default: {
-                    operands.emplace(cur, _x, _k);
-                    //std::cout << "create:\n";
-                    //operands.top().metainfo();
+                    operands.push(create_automata(cur_symb));
                     break;
                 }
             }
@@ -253,12 +135,72 @@ public:
                 ("Invalid language provided. Parsing exited with " + std::to_string(operands.size()) + " operands").c_str()
             );
         }
-        return operands.top().ans;
+        return operands.top();
+    }
+
+    void calculate_pairs(char req_symb, size_t req_len) {
+        std::queue<step> queue;
+        for (size_t i = 0; i < auto_nodes.size(); ++i) {
+            queue.push({ i, i, 0 });
+        }
+        while (!queue.empty()) {
+            auto v = queue.front(); queue.pop();
+            if (v.len == req_len) {
+                possible_pairs.push_back({ v.begin, v.cur });
+                continue;
+            }
+            for (auto& i : auto_nodes[v.cur].next_nodes) {
+                if (i.symb == null_word) {
+                    queue.push({ v.begin, i.to, v.len });
+                }
+                else if (i.symb == req_symb) {
+                    queue.push({ v.begin, i.to, v.len + 1 });
+                }
+            }
+        }
+    }
+
+    void calculate_distances() {
+        size_t N = auto_nodes.size();
+        dist.resize(N, std::vector<size_t>(N, inf));
+        for (size_t i = 0; i < N; ++i) {
+            dist[i][i] = 0;
+            for (auto& j : auto_nodes[i].next_nodes) {
+                dist[i][j.to] = (j.symb != null_word);
+            }
+        }
+        for (size_t k = 0; k < N; ++k) {
+            for (size_t i = 0; i < N; ++i) {
+                for (size_t j = 0; j < N; ++j) {
+                    dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+
+public:
+
+    __solver() = default;
+
+    size_t solve(const std::string& rp_regex, char req_symb, size_t req_len) {
+        auto beg_end = create_structures(rp_regex);
+        calculate_pairs(req_symb, req_len);
+        calculate_distances();
+        size_t ans = inf;
+        for (auto& i : possible_pairs) {
+            ans = std::min(ans, dist[beg_end.begin][i.begin] + req_len + dist[i.end][beg_end.end]);
+        }
+        if (ans == inf) {
+            throw std::logic_error(
+                "Error: there is no answer in regular expression."
+            );
+        }
+        return ans;
     }
 
 };
 
 
-size_t solve(std::string a, char x, size_t k) {
-    return __solver(a, x, k).solve();
+size_t solve(const std::string& rp_regex, char req_symb, size_t req_len) {
+    return __solver().solve(rp_regex, req_symb, req_len);
 }

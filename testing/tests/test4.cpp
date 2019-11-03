@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("aaa.a+.", 'a', 3) != 3;
+	exit(solve("aaa.a+.", 'a', 3) != 3);
 }

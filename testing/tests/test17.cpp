@@ -2,5 +2,5 @@
 
 
 int main() {
-	return solve("ba.a.ab.b.+*", 'a', 3) != 6;
+	exit(solve("ba.a.ab.b.+*", 'a', 3) != 6);
 }

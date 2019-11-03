@@ -1,4 +1,0 @@
-/home/alexstanovoy/Documents/git-projects/formal-languages-hw1-2019/testing/CMakeFiles/rebuild_cache.dir
-/home/alexstanovoy/Documents/git-projects/formal-languages-hw1-2019/testing/CMakeFiles/edit_cache.dir
-/home/alexstanovoy/Documents/git-projects/formal-languages-hw1-2019/testing/CMakeFiles/main.dir
-/home/alexstanovoy/Documents/git-projects/formal-languages-hw1-2019/testing/CMakeFiles/test.dir
