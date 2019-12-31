@@ -1,6 +1,6 @@
+#include <cassert>
 #include "solver.hpp"
 
-
 int main() {
-	exit(solve("aaa.*.", 'a', 4) != 5);
+    assert(solve("aaa.*.", 'a', 4) == 5);
 }

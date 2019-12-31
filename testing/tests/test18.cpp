@@ -1,6 +1,6 @@
+#include <cassert>
 #include "solver.hpp"
 
-
 int main() {
-	exit(solve("ab+c.aba.*.bac.+.+*", 'b', 2) != 4);
+    assert(solve("ab+c.aba.*.bac.+.+*", 'b', 2) == 4);
 }

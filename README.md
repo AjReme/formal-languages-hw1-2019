@@ -1,5 +1,8 @@
 ## Formal languages course, Practice 1, Variant 9
 
+[![Build Status](https://travis-ci.org/AjReme/formal-languages-hw1-2019.svg?branch=master)](https://travis-ci.org/AjReme/formal-languages-hw1-2019)
+[![Codecov status](https://codecov.io/github/AjReme/formal-languages-hw1-2019/coverage.svg?branch=master)](https://codecov.io/gh/Ajreme/formal-languages-hw1-2019)
+
 ### Statement
 
 You're given a string ***α***, symbol ***x*** and natural number ***k > 0***. ***α*** represents regular expression in Reverse Polish notation. Alphabet is ***{ a, b, c, 1 }***. Possible operators are:

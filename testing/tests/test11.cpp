@@ -1,6 +1,6 @@
+#include <cassert>
 #include "solver.hpp"
 
-
 int main() {
-	exit(solve("a*a.", 'a', 3) != 3);
+    assert(solve("a*a.", 'a', 3) == 3);
 }

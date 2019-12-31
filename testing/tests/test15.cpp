@@ -1,6 +1,6 @@
+#include <cassert>
 #include "solver.hpp"
 
-
 int main() {
-	exit(solve("1a+", 'a', 1) != 1);
+    assert(solve("1a+", 'a', 1) == 1);
 }
